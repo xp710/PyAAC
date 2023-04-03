@@ -1,45 +1,84 @@
 import os
-import readline
 
 
-def Help(variables, commands):
-    for k in commandList:
-        print(k, commandList[k][1])
+class Command():
+    def __init__(self, name, helpText):
+        self.name = name
+        self.helpText = helpText
+
+    def do(self, variables, commands):
+        pass
 
 
-def Exit(variables, commands):
-    variables['running'] = False
+class Help(Command):
+    def __init__(self):
+        Command.__init__(self, 'Help', 'Syntax: "/h [command]"')
+
+    def do(self, variables, commands):
+        if len(commands) > 1:
+            print(commandList[commands[1]].helpText)
+        else:
+            for k in commandList:
+                print(k, commandList[k].name)
 
 
-def Voice(variables, commands):
-    if len(commands) > 1:
-        variables['engine'].setProperty('voice', commands[1])
-    else:
-        for v in variables['voices']:
-            print(v.id)
+class Exit(Command):
+    def __init__(self):
+        Command.__init__(self, 'Exit', 'Syntax: "/x"')
 
-def Repeat(variables, commands):
-    variables['engine'].say(variables['lastSentence'])
-    variables['engine'].runAndWait()
+    def do(self, variables, commands):
+        variables['running'] = False
 
 
-def Speed(variables, commands):
-    if len(commands) > 1:
-        variables['engine'].setProperty('rate', int(commands[1]))
+class Voice(Command):
+    def __init__(self):
+        Command.__init__(self, 'Voice', 'Syntax: "/v [voice]"\n'
+                                        'Syntax for [voice]: "accent+voice" e.g. "english-us+f3"')
+
+    def do(self, variables, commands):
+        if len(commands) > 1:
+            variables['engine'].setProperty('voice', commands[1])
+        else:
+            for v in variables['voices']:
+                print(v.id)
+
+
+class Repeat(Command):
+    def __init__(self):
+        Command.__init__(self, 'Repeat', 'Repeats the last sentence.')
+
+    def do(self, variables, commands):
+        variables['engine'].say(variables['lastSentence'])
         variables['engine'].runAndWait()
-    else:
-        print(variables['engine'].getProperty('rate'))
 
 
-def ClearScreen(variables, commands):
-    os.system('clear')
+class Speed(Command):
+    def __init__(self):
+        Command.__init__(self, 'Speed', 'Display or change speed.\n'
+                                        'Syntax: "/s [speed]"')
+
+    def do(self, variables, commands):
+        if len(commands) > 1:
+            variables['engine'].setProperty('rate', int(commands[1]))
+            variables['engine'].runAndWait()
+        else:
+            print(variables['engine'].getProperty('rate'))
+
+
+class ClearScreen(Command):
+    def __init__(self):
+        Command.__init__(self, 'Clear Screen', 'Clears the screen.\n'
+                                               'Syntax: "/c"')
+
+    def do(self, variables, commands):
+        os.system('clear')
 
 
 commandList = {
-    '/h': (Help, 'Help'),
-    '/x': (Exit, 'Exit'),
-    '/r': (Repeat, 'Repeat last sentence'),
-    '/v': (Voice, 'List or change voices'),
-    '/s': (Speed, 'Display or change talking speed'),
-    '/c': (ClearScreen, 'Clear screen'),
+    '/h': Help(),
+    '/x': Exit(),
+    '/r': Repeat(),
+    '/v': Voice(),
+    '/s': Speed(),
+    '/c': ClearScreen(),
 }
