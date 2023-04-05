@@ -1,4 +1,5 @@
 import os
+import json
 
 
 class Command():
@@ -38,8 +39,9 @@ class Voice(Command):
     def do(self, variables, commands):
         if len(commands) > 1:
             variables['engine'].setProperty('voice', commands[1])
+
         else:
-            for v in variables['voices']:
+            for v in variables['engine'].getProperty('voices'):
                 print(v.id)
 
 
@@ -74,6 +76,46 @@ class ClearScreen(Command):
         os.system('clear')
 
 
+class Load(Command):
+    def __init__(self):
+        Command.__init__(self, 'Load File', 'Loads settings from the save file.')
+
+    def do(self, variables, commands):
+        with open('aac/aac.sav') as f:
+            settings = f.read().splitlines()
+            variables['engine'].setProperty('voice', settings[0])
+            variables['engine'].setProperty('rate', int(settings[1]))
+
+
+class PronunciationSave(Command):
+    def __init__(self):
+        Command.__init__(self, 'Pronunciation Save', 'Save a pronunciation for a word.\n'
+                                                     'Syntax: /ps [word] [pronunciation]')
+
+    def do(self, variables, commands):
+        variables['replacements'][commands[1]] = commands[2]
+        jsonFile = json.dumps(variables['replacements'])
+        with open('aac/replacements.json', '+w') as f:
+            f.write(jsonFile)
+
+
+class PronunciationLoad(Command):
+    def __init__(self):
+        Command.__init__(self, 'Pronunciation Load', 'Load all pronunciations from file.')
+
+    def do(self, variables, commands):
+        with open('aac/replacements.json', '+r') as f:
+            variables['replacements'] = json.load(f)
+
+class PronunciationView(Command):
+    def __init__(self):
+        Command.__init__(self, 'Pronunciation View', 'View all saved pronunciations.')
+
+    def do(self, variables, commands):
+        for k in variables['replacements']:
+            print(k, variables['replacements'][k])
+
+
 commandList = {
     '/h': Help(),
     '/x': Exit(),
@@ -81,4 +123,8 @@ commandList = {
     '/v': Voice(),
     '/s': Speed(),
     '/c': ClearScreen(),
+    '/l': Load(),
+    '/ps': PronunciationSave(),
+    '/pl': PronunciationLoad(),
+    '/pv': PronunciationView(),
 }
