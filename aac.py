@@ -9,8 +9,13 @@ def Initialize(variables):
 
 def CheckAndReplace(variables, toSay):
     for w in variables['replacements'].keys():
-        if w in toSay:
-            toSay = toSay.replace(w, variables['replacements'][w])
+        words = toSay.split(' ')
+        # words = [w if item == variables['replacements'][w] else item for item in words]
+        if w in words:
+            for j in range(len(words)):
+                if words[j] == w:
+                    words[j] = variables['replacements'][w]
+        toSay = ' '.join(words)
     return toSay
 
 def GetInput(variables):
