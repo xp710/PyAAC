@@ -4,13 +4,12 @@ def Initialize(variables):
     commandList['/l'].do(variables, ['/l'])
     variables['engine'].runAndWait()
     commandList['/pl'].do(variables, ['/pl'])
-    print('Welcome to PyAAC, if you need help, type /h')
+    print('Welcome to PyAAC, if you need help, type "/h" or for extra help, "/h [command]"')
 
 
 def CheckAndReplace(variables, toSay):
     for w in variables['replacements'].keys():
         words = toSay.split(' ')
-        # words = [w if item == variables['replacements'][w] else item for item in words]
         if w in words:
             for j in range(len(words)):
                 if words[j] == w:

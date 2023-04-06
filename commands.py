@@ -2,7 +2,7 @@ import os
 import json
 
 
-class Command():
+class Command:
     def __init__(self, name, helpText):
         self.name = name
         self.helpText = helpText
@@ -99,6 +99,18 @@ class PronunciationSave(Command):
             f.write(jsonFile)
 
 
+class PronunciationDelete(Command):
+    def __init__(self):
+        Command.__init__(self, 'Pronunciation Delete', 'Delete a word and its pronunciation.\n'
+                                                       'Syntax: /pd [word]')
+
+    def do(self, variables, commands):
+        variables['replacements'].pop(commands[1])
+        jsonFile = json.dumps(variables['replacements'])
+        with open('aac/replacements.json', '+w') as f:
+            f.write(jsonFile)
+
+
 class PronunciationLoad(Command):
     def __init__(self):
         Command.__init__(self, 'Pronunciation Load', 'Load all pronunciations from file.')
@@ -106,6 +118,7 @@ class PronunciationLoad(Command):
     def do(self, variables, commands):
         with open('aac/replacements.json', '+r') as f:
             variables['replacements'] = json.load(f)
+
 
 class PronunciationView(Command):
     def __init__(self):
@@ -125,6 +138,7 @@ commandList = {
     '/c': ClearScreen(),
     '/l': Load(),
     '/ps': PronunciationSave(),
+    '/pd': PronunciationDelete(),
     '/pl': PronunciationLoad(),
     '/pv': PronunciationView(),
 }

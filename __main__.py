@@ -1,13 +1,13 @@
-import pyttsx3
+# TODO: add saving settings
 import aac
+import pyttsx3
 
 variables = {
     'running': True,
     'engine': pyttsx3.init(),
     'lastSentence': '',
+    'replacements': {},
 }
-variables['voices'] = variables['engine'].getProperty('voices')
-variables['rate'] = variables['engine'].getProperty('rate')
 
 aac.Initialize(variables)
 
